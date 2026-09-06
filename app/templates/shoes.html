@@ -3,6 +3,7 @@
 {% block content %}
 <h1>Shoes</h1>
 
+<div class="table-wrap">
 <table class="table">
   <thead>
     <tr><th>Name</th><th>Brand / model</th><th>Mileage</th><th>Runs</th><th>Status</th><th></th></tr>
@@ -29,6 +30,7 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
 
 <h2>Add a shoe</h2>
 <form method="post" action="/shoes" class="inline-form">

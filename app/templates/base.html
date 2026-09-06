@@ -2,19 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{% block title %}Running Tracker{% endblock %}</title>
+
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#ff6a3d">
+  <link rel="icon" href="/static/icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Running">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <link rel="stylesheet" href="/static/style.css">
   {% block head %}{% endblock %}
 </head>
 <body>
   {% if user %}
   <nav class="topnav">
-    <a class="brand" href="/">Running Tracker</a>
-    <a href="/">Dashboard</a>
-    <a href="/runs">Runs</a>
-    <a href="/shoes">Shoes</a>
-    <a href="/garmin/settings">Garmin</a>
+    <a class="brand" href="/">
+      <img src="/static/icons/icon-192.png" alt="" class="brand-icon">
+      <span>Running Tracker</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link {{ 'active' if request.url.path == '/' }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/runs" class="nav-link {{ 'active' if '/runs' in request.url.path }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9.5 2h5"/></svg>
+        <span>Runs</span>
+      </a>
+      <a href="/shoes" class="nav-link {{ 'active' if '/shoes' in request.url.path }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19v-3.2c0-.9.6-1.7 1.5-2l4.7-1.5c.8-.2 1.4-.8 1.8-1.6.8-1.7 2.7-2.5 4.4-1.9l2.8 1c.9.3 1.5 1.2 1.5 2.1V17a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1Z"/><path d="M3 19h18"/></svg>
+        <span>Shoes</span>
+      </a>
+      <a href="/garmin/settings" class="nav-link {{ 'active' if '/garmin' in request.url.path }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="6" width="10" height="12" rx="3"/><path d="M9 6V4h6v2M9 20v-2h6v2"/></svg>
+        <span>Garmin</span>
+      </a>
+    </div>
     <form method="post" action="/logout" class="nav-logout">
       <button type="submit" class="link-button">Log out</button>
     </form>
@@ -26,5 +52,11 @@
     {% if msg %}<div class="flash flash-ok">{{ msg }}</div>{% endif %}
     {% block content %}{% endblock %}
   </main>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
+    }
+  </script>
 </body>
 </html>
