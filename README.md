@@ -28,6 +28,26 @@ maintains its own resilient multi-strategy login rather than depending on `garth
 password" and "enter code", so this app must run as a **single process/worker**. The provided
 Dockerfile already sets `--workers 1`. Don't scale this past one instance without changing that.
 
+## Notifications when a run syncs in
+
+There's no way to get a true instant popup the moment you stop the watch - Garmin's unofficial
+API only supports polling, not a webhook. What this app does instead: every time a sync (manual
+or background) pulls in new runs, it sends a **Web Push notification** to any device you've
+enabled it on, so you can tag shoes right after Garmin finishes syncing the activity to the
+cloud (typically within a minute or two of ending the run, if your phone was nearby over
+Bluetooth) rather than only noticing next time you happen to open the site.
+
+This is optional and off by default - enable it by generating a VAPID keypair:
+
+```bash
+python -m app.generate_vapid_keys
+```
+
+and setting the printed `VAPID_PRIVATE_KEY` / `VAPID_PUBLIC_KEY`, plus a `VAPID_CONTACT_EMAIL`
+(any address - it's only used so browser push services can reach you if something's wrong, it's
+never shown in the app), as environment variables. Once set, a "Notifications" section appears
+on the Garmin settings page with an "Enable on this device" button.
+
 ## Local setup
 
 ```bash
@@ -73,6 +93,8 @@ This repo deploys straight from GitHub to Render using the included `render.yaml
    - `GARMIN_TOKEN_ENC_KEY` - generate with
      `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`
    - `DATABASE_URL` - the Neon connection string from step 1
+   - `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY`, `VAPID_CONTACT_EMAIL` - optional, only if you
+     want push notifications (see "Notifications when a run syncs in" above); leave blank to skip
 5. Deploy. Every future `git push` to the connected branch auto-redeploys.
 
 Since there's no persistent disk and only one instance, the app's single-worker/in-memory-MFA
@@ -109,7 +131,8 @@ app/
   security.py                  Password hashing, session cookies, auth dependency
   crypto.py                       Encrypts the stored Garmin session token
   garmin_client.py                   Garmin login/MFA/sync logic
-  scheduler.py                          Background auto-sync job
-  routers/                                 auth, garmin, shoes, runs, dashboard
-  templates/, static/                        Server-rendered pages, Chart.js dashboard
+  push_service.py                       Sends Web Push notifications on new runs
+  scheduler.py                             Background auto-sync job
+  routers/                                    auth, garmin, push, shoes, runs, dashboard
+  templates/, static/                            Server-rendered pages, Chart.js dashboard, service worker
 ```

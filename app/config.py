@@ -30,3 +30,11 @@ SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30  # 30 days
 # Mark the session cookie Secure (HTTPS-only) in production. Leave false for local
 # http://127.0.0.1 dev, set true once deployed behind real HTTPS (e.g. on Render).
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").lower() == "true"
+
+# Web Push (browser/phone notifications when new runs sync in). Optional: if any of
+# these are unset, the app runs fine but the notification feature stays hidden.
+# Generate a keypair with: python -m app.generate_vapid_keys
+VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY") or None
+VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY") or None
+VAPID_CONTACT_EMAIL = os.environ.get("VAPID_CONTACT_EMAIL") or None
+PUSH_ENABLED = bool(VAPID_PRIVATE_KEY and VAPID_PUBLIC_KEY and VAPID_CONTACT_EMAIL)

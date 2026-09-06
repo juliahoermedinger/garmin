@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
+from ..config import PUSH_ENABLED
 from ..database import get_db
 from ..garmin_client import GarminLoginError, save_garmin_link, start_login, submit_mfa_code, sync_runs_for_user
 from ..models import User
@@ -22,6 +23,7 @@ def settings(request: Request, user: User = Depends(require_user)):
             "error": request.query_params.get("error"),
             "msg": request.query_params.get("msg"),
             "awaiting_mfa": request.query_params.get("awaiting_mfa") == "1",
+            "push_enabled": PUSH_ENABLED,
         },
     )
 

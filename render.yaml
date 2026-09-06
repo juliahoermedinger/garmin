@@ -18,3 +18,9 @@ services:
         value: "30"
       - key: COOKIE_SECURE
         value: "true"
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_CONTACT_EMAIL
+        sync: false

@@ -36,4 +36,18 @@
     </form>
   {% endif %}
 {% endif %}
+
+{% if push_enabled %}
+<h2>Notifications</h2>
+<p class="hint">
+  Get a notification on this device as soon as new runs sync in, so you can tag shoes
+  right away instead of waiting until you next open the site.
+</p>
+<div class="inline-form">
+  <button type="button" onclick="enablePushNotifications()">Enable on this device</button>
+  <button type="button" onclick="disablePushNotifications()" class="link-button">Disable</button>
+</div>
+<p id="push-status" class="hint"></p>
+<script src="/static/push.js"></script>
+{% endif %}
 {% endblock %}

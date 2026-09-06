@@ -31,6 +31,9 @@ class User(Base):
     )
     shoes: Mapped[list["Shoe"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     runs: Mapped[list["Run"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    push_subscriptions: Mapped[list["PushSubscription"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class GarminLink(Base):
@@ -92,3 +95,19 @@ class Run(Base):
             return None
         km = self.distance_meters / 1000
         return self.duration_seconds / km
+
+
+class PushSubscription(Base):
+    """A browser's Web Push subscription for one device, used to notify a user
+    when new runs sync in so they can tag shoes right away."""
+
+    __tablename__ = "push_subscriptions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    endpoint: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
+    p256dh: Mapped[str] = mapped_column(String(255), nullable=False)
+    auth: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    user: Mapped["User"] = relationship(back_populates="push_subscriptions")

@@ -26,6 +26,7 @@ from sqlalchemy.orm import Session
 
 from .crypto import decrypt_text, encrypt_text
 from .models import GarminLink, Run, User, utcnow
+from .push_service import notify_user
 
 _MFA_TTL_SECONDS = 10 * 60
 _pending_mfa: dict[int, tuple[float, Garmin]] = {}
@@ -167,4 +168,15 @@ def sync_runs_for_user(db: Session, user: User, limit: int = 50) -> int:
     link.status = "connected"
     link.last_synced_at = utcnow()
     db.commit()
+
+    if new_count:
+        run_word = "run" if new_count == 1 else "runs"
+        notify_user(
+            db,
+            user,
+            title="New run synced",
+            body=f"{new_count} new {run_word} synced from Garmin - tag your shoes.",
+            url="/runs",
+        )
+
     return new_count

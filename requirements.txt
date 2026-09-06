@@ -10,3 +10,4 @@ python-dotenv==1.0.1
 apscheduler==3.10.4
 garminconnect==0.3.11
 psycopg[binary]==3.2.13
+pywebpush==2.5.0
