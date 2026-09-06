@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Shoes - Running Tracker{% endblock %}
+{% block content %}
+<h1>Shoes</h1>
+
+<table class="table">
+  <thead>
+    <tr><th>Name</th><th>Brand / model</th><th>Mileage</th><th>Runs</th><th>Status</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for row in shoe_stats %}
+    <tr class="{{ 'retired-row' if row.shoe.retired }}">
+      <td>{{ row.shoe.name }}</td>
+      <td>{{ [row.shoe.brand, row.shoe.model] | select | join(' ') }}</td>
+      <td>{{ "%.1f"|format(row.total_distance_km) }} km</td>
+      <td>{{ row.run_count }}</td>
+      <td>{{ "Retired" if row.shoe.retired else "Active" }}</td>
+      <td class="row-actions">
+        <form method="post" action="/shoes/{{ row.shoe.id }}/retire">
+          <button type="submit" class="link-button">{{ "Reactivate" if row.shoe.retired else "Retire" }}</button>
+        </form>
+        <form method="post" action="/shoes/{{ row.shoe.id }}/delete" onsubmit="return confirm('Delete this shoe? Runs will keep their stats but lose the shoe tag.');">
+          <button type="submit" class="link-button link-button-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">No shoes yet - add your first one below.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Add a shoe</h2>
+<form method="post" action="/shoes" class="inline-form">
+  <label>Name<input type="text" name="name" placeholder="e.g. Daily trainer" required></label>
+  <label>Brand<input type="text" name="brand" placeholder="e.g. Nike"></label>
+  <label>Model<input type="text" name="model" placeholder="e.g. Pegasus 41"></label>
+  <button type="submit">Add shoe</button>
+</form>
+{% endblock %}

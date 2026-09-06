@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Register - Running Tracker{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <h1>Create account</h1>
+  <form method="post" action="/register">
+    <label>Email<input type="email" name="email" required autofocus></label>
+    <label>Password<input type="password" name="password" minlength="8" maxlength="72" required></label>
+    <label>Confirm password<input type="password" name="password_confirm" minlength="8" maxlength="72" required></label>
+    <button type="submit">Register</button>
+  </form>
+  <p class="auth-switch">Already have an account? <a href="/login">Log in</a></p>
+</div>
+{% endblock %}

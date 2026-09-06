@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Run detail - Running Tracker{% endblock %}
+{% block content %}
+<p><a href="/runs">&larr; Back to runs</a></p>
+<h1>{{ run.start_time.strftime('%A, %Y-%m-%d %H:%M') }}</h1>
+
+<div class="stat-grid">
+  <div class="stat-card"><h3>Distance</h3><p class="stat-big">{{ "%.2f"|format(run.distance_meters / 1000) }} km</p></div>
+  <div class="stat-card"><h3>Duration</h3><p class="stat-big">{{ run.duration_seconds | duration }}</p></div>
+  <div class="stat-card"><h3>Pace</h3><p class="stat-big">{{ run.avg_pace_per_km | pace }}</p></div>
+  <div class="stat-card"><h3>Avg HR</h3><p class="stat-big">{{ run.avg_hr | round(0) if run.avg_hr else "-" }}</p></div>
+  <div class="stat-card"><h3>Max HR</h3><p class="stat-big">{{ run.max_hr | round(0) if run.max_hr else "-" }}</p></div>
+  <div class="stat-card"><h3>Elevation gain</h3><p class="stat-big">{{ run.elevation_gain_m | round(0) if run.elevation_gain_m else "-" }} m</p></div>
+  <div class="stat-card"><h3>Calories</h3><p class="stat-big">{{ run.calories | round(0) if run.calories else "-" }}</p></div>
+</div>
+
+<h2>Shoe</h2>
+<form method="post" action="/runs/{{ run.id }}/shoe" class="inline-form">
+  <select name="shoe_id" onchange="this.form.submit()">
+    <option value="" {{ "selected" if not run.shoe_id }}>-- none --</option>
+    {% for shoe in shoes %}
+    <option value="{{ shoe.id }}" {{ "selected" if run.shoe_id == shoe.id }}>{{ shoe.name }}{{ " (retired)" if shoe.retired }}</option>
+    {% endfor %}
+  </select>
+</form>
+{% endblock %}

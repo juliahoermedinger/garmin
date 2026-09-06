@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Running Tracker{% endblock %}
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+{% if not garmin_connected %}
+<div class="banner">
+  Garmin isn't connected yet. <a href="/garmin/settings">Connect your Garmin account</a> to start pulling in runs.
+</div>
+{% elif unassigned_count > 0 %}
+<div class="banner">
+  {{ unassigned_count }} run(s) don't have a shoe assigned yet. <a href="/runs">Assign shoes</a>.
+</div>
+{% endif %}
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <h3>Last 7 days</h3>
+    <p class="stat-big">{{ "%.1f"|format(week.distance_km) }} km</p>
+    <p>{{ week.count }} run(s) · {{ "%.1f"|format(week.duration_hours) }} h</p>
+  </div>
+  <div class="stat-card">
+    <h3>Last 30 days</h3>
+    <p class="stat-big">{{ "%.1f"|format(month.distance_km) }} km</p>
+    <p>{{ month.count }} run(s) · {{ "%.1f"|format(month.duration_hours) }} h</p>
+  </div>
+  <div class="stat-card">
+    <h3>All-time runs</h3>
+    <p class="stat-big">{{ run_count }}</p>
+    <p><a href="/runs">View all runs</a></p>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Mileage by shoe</h3>
+    <canvas id="shoeChart" height="220"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3>Recent avg heart rate &amp; pace</h3>
+    <canvas id="trendChart" height="220"></canvas>
+  </div>
+</div>
+
+<script>
+  const shoeData = {{ shoe_mileage | tojson }};
+  new Chart(document.getElementById('shoeChart'), {
+    type: 'bar',
+    data: {
+      labels: shoeData.map(s => s.name),
+      datasets: [{ label: 'km', data: shoeData.map(s => s.km), backgroundColor: '#3b82f6' }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+  });
+
+  const trend = {{ trend | tojson }};
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: trend.labels,
+      datasets: [
+        { label: 'Avg HR (bpm)', data: trend.avg_hr, borderColor: '#ef4444', yAxisID: 'y' },
+        { label: 'Pace (min/km)', data: trend.pace_min_per_km, borderColor: '#3b82f6', yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { type: 'linear', position: 'left', title: { display: true, text: 'bpm' } },
+        y1: { type: 'linear', position: 'right', title: { display: true, text: 'min/km' }, reverse: true, grid: { drawOnChartArea: false } }
+      }
+    }
+  });
+</script>
+{% endblock %}

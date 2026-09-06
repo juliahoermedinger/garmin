@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Running Tracker{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  {% if user %}
+  <nav class="topnav">
+    <a class="brand" href="/">Running Tracker</a>
+    <a href="/">Dashboard</a>
+    <a href="/runs">Runs</a>
+    <a href="/shoes">Shoes</a>
+    <a href="/garmin/settings">Garmin</a>
+    <form method="post" action="/logout" class="nav-logout">
+      <button type="submit" class="link-button">Log out</button>
+    </form>
+  </nav>
+  {% endif %}
+
+  <main class="container">
+    {% if error %}<div class="flash flash-error">{{ error }}</div>{% endif %}
+    {% if msg %}<div class="flash flash-ok">{{ msg }}</div>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

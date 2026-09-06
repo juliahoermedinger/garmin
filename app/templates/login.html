@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Log in - Running Tracker{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <h1>Log in</h1>
+  <form method="post" action="/login">
+    <label>Email<input type="email" name="email" required autofocus></label>
+    <label>Password<input type="password" name="password" required></label>
+    <button type="submit">Log in</button>
+  </form>
+  <p class="auth-switch">No account? <a href="/register">Register</a></p>
+</div>
+{% endblock %}

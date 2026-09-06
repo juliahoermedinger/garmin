@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Garmin - Running Tracker{% endblock %}
+{% block content %}
+<h1>Garmin connection</h1>
+
+{% if link %}
+  <p>
+    Status: <strong>{{ "Connected" if link.status == "connected" else "Needs reconnect" }}</strong>
+    {% if link.last_synced_at %}&middot; last synced {{ link.last_synced_at.strftime('%Y-%m-%d %H:%M UTC') }}{% endif %}
+  </p>
+  <form method="post" action="/garmin/sync" class="inline-form"><button type="submit">Sync now</button></form>
+  <form method="post" action="/garmin/disconnect" class="inline-form" onsubmit="return confirm('Disconnect Garmin? You can reconnect any time.');">
+    <button type="submit" class="link-button-danger">Disconnect</button>
+  </form>
+{% endif %}
+
+{% if not link or link.status != "connected" %}
+  <h2>{{ "Reconnect Garmin" if link else "Connect Garmin" }}</h2>
+
+  {% if awaiting_mfa %}
+    <p>Garmin sent a verification code to confirm this login. Enter it below.</p>
+    <form method="post" action="/garmin/mfa" class="auth-card">
+      <label>Verification code<input type="text" name="code" inputmode="numeric" required autofocus></label>
+      <button type="submit">Confirm code</button>
+    </form>
+  {% else %}
+    <p class="hint">
+      This uses your real Garmin Connect email/password to pull in your runs (Garmin has no public API
+      for personal projects). Your password is used once to sign in and is not stored - only an
+      encrypted session token is kept so future syncs don't need it again.
+    </p>
+    <form method="post" action="/garmin/connect" class="auth-card">
+      <label>Garmin email<input type="email" name="email" required autofocus></label>
+      <label>Garmin password<input type="password" name="password" required></label>
+      <button type="submit">Connect</button>
+    </form>
+  {% endif %}
+{% endif %}
+{% endblock %}
